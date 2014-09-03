@@ -1,18 +1,35 @@
-var ProxyWrap = require('../index'),
-	http = require('http'),
-	phttp = ProxyWrap.proxy( http, { strict: true }),
+var Util = require( 'findhit-util' ),
+	httpUtil = require( './http.util' ),
 
-	sinon = require('sinon'),
-	chai = require('chai'),
+	sinon = require( 'sinon' ),
+	chai = require( 'chai' ),
 	expect = chai.expect;
 
-var server = phttp.createServer(),
-	port = Math.floor((Math.random() * 10000) + 10000);
+describe( "PROXY Protocol v1", function () {
 
-server.listen( port, '0.0.0.0' );
+	describe( 'net', function () {
+		var server = httpUtil.createServer( 'net', { strict: true });
 
-describe("PROXY Protocol v1", function () {
+		it( "Check socket is stablished correctly", function ( done ) {
 
-	
+			httpUtil.testServer( server ).done( done );
+
+		});
+
+		it( "Check with another socket parameters", function ( done ) {
+
+			httpUtil.testServer(
+				server,
+				{
+					clientAddress: '192.168.0.1',
+					clientPort: 3350,
+					proxyAddress: '192.168.0.254',
+					proxyPort: 443,
+				}
+			)	.done( done );
+
+		});
+
+	});
 
 });

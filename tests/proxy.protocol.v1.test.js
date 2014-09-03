@@ -1,5 +1,5 @@
 var Util = require( 'findhit-util' ),
-	httpUtil = require( './http.util' ),
+	tUtil = require( './tests.util' ),
 
 	sinon = require( 'sinon' ),
 	chai = require( 'chai' ),
@@ -8,17 +8,17 @@ var Util = require( 'findhit-util' ),
 describe( "PROXY Protocol v1", function () {
 
 	describe( 'net', function () {
-		var server = httpUtil.createServer( 'net', { strict: true });
+		var server = tUtil.createServer( 'net', { strict: true });
 
 		it( "Check socket is stablished correctly", function ( done ) {
 
-			httpUtil.testServer( server ).done( done );
+			tUtil.testServer( server ).done( done );
 
 		});
 
 		it( "Check with another socket parameters", function ( done ) {
 
-			httpUtil.testServer(
+			tUtil.testServer(
 				server,
 				{
 					clientAddress: '192.168.0.1',

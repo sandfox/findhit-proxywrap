@@ -1,5 +1,4 @@
-findhit-proxywrap
-=================
+# Proxywrap ![test-badge](http://strider.findhit.com/findhit/findhit-proxywrap/badge)
 
 This module is a fork of original [proxywrap](https://github.com/daguej/node-proxywrap) by [Josh Dague](https://github.com/daguej). Unfortunately, the project doesn't have recent changes. As so, we decided to contribute to it by forking it and make it better. Do you have any idea to improve this? Feel free to open an **Issue** or **Pull Request**.
 

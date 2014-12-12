@@ -1,5 +1,5 @@
 var ProxyWrap = require( '../index' ),
-	Promise = require( 'findhit-promise' ),
+	Promise = require( 'bluebird' ),
 	Util = require( 'findhit-util' ),
 
 	protocols = {
@@ -12,12 +12,18 @@ var ProxyWrap = require( '../index' ),
 	expect = chai.expect;
 
 module.defaults = {
-	testServer: {
+	fakeConnect: {
 		protocol: 'TCP4',
 		clientAddress: '10.10.10.1',
 		clientPort: 12456,
 		proxyAddress: '10.10.10.254',
 		proxyPort: 80,
+
+		autoCloseSocket: true,
+		testAttributes: true,
+
+		header: undefined,
+		headerJoinCRLF: true,
 	},
 }
 
@@ -43,23 +49,28 @@ module.exports = {
 		return server;
 	},
 
-	testServer: function ( server, options ) {
+	fakeConnect: function ( server, options ) {
 		var header, body,
 			p = server._protocol,
 			pc = server._protocolConstructor;
 
 		// Prepare options
-		options = Util.extend( {}, module.defaults.testServer, Util.is.Object( options ) && options || {} );
+		options = Util.extend( {}, module.defaults.fakeConnect, Util.is.Object( options ) && options || {} );
 
 		// Build header
-		header = [
-			'PROXY',
-			options.protocol,
-			options.clientAddress,
-			options.proxyAddress,
-			options.clientPort,
-			options.proxyPort,
-		].join(' ') + "\r\n";
+		header =
+		(
+			options.header ||
+			[
+				'PROXY',
+				options.protocol,
+				options.clientAddress,
+				options.proxyAddress,
+				options.clientPort,
+				options.proxyPort,
+			].join(' ')
+		) +
+		( options.headerJoinCRLF && "\r\n" || "" );
 
 		body = [
 			"GET /something/cool HTTP/1.1",
@@ -72,20 +83,38 @@ module.exports = {
 				host = server.host,
 				port = server.port;
 
-			server.once( 'proxiedConnection', function ( socket ) {
-				
-				try{
+			var value = [ undefined, client ];
 
-					expect( socket.clientAddress ).to.be.equal( options.clientAddress );
-					expect( socket.proxyAddress ).to.be.equal( options.proxyAddress );
-					expect( socket.clientPort ).to.be.equal( options.clientPort );
-					expect( socket.proxyPort ).to.be.equal( options.proxyPort );
-
-				} catch ( err ) {
+			server.once( 'connection', function ( socket ) {
+				socket.on( 'error', function ( err ) {
 					reject( err );
+				});
+			});
+
+			server.once( 'proxiedConnection', function ( socket ) {
+				value[0] = socket;
+
+				socket.on( 'error', function ( err ) {
+					reject( err );
+				});
+
+				if( options.testAttributes && ! options.header ) {
+					try{
+						expect( socket.clientAddress ).to.be.equal( options.clientAddress );
+						expect( socket.proxyAddress ).to.be.equal( options.proxyAddress );
+						expect( socket.clientPort ).to.be.equal( options.clientPort );
+						expect( socket.proxyPort ).to.be.equal( options.proxyPort );
+					} catch ( err ) {
+						reject( err );
+					}
 				}
 
-				socket.end();
+				if( options.autoCloseSocket ) {
+					socket.end();
+				} else {
+					fulfill( value );
+				}
+
 			});
 
 			client.once( 'connect', function () {
@@ -93,11 +122,13 @@ module.exports = {
 				client.write( header + body );
 			});
 
-			client.once( 'end', function () {
-				fulfill();
-			});
-
 			client.connect( port, host );
+
+			if( options.autoCloseSocket ) {
+				client.once( 'end', function () {
+					fulfill( value );
+				});
+			};
 
 		});
 	}

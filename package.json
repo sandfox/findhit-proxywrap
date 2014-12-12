@@ -31,8 +31,8 @@
     "url": "https://github.com/findhit/findhit-proxywrap"
   },
   "dependencies": {
-    "findhit-util": "^0.0.8",
-    "findhit-promise": "^0.0.3"
+    "bluebird": "^2.3.11",
+    "findhit-util": "^0.0.8"
   },
   "devDependencies": {
     "chai": "^1.9.1",

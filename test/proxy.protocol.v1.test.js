@@ -31,12 +31,12 @@ describe( "PROXY Protocol v1", function () {
 			return tUtil.fakeConnect(
 				server,
 				{
-					header: 'PROXY 192.168.0.1 192.168.0.254 3350 443',
+					header: 'PROXY TCP4 192.168.0.1 192.168.0.254 3350 443',
 				}
 			);
 		});
 
-		describe( "Should detect a malformed PROXY header", function () {
+		describe( "Should detect a malformed PROXY headers", function () {
 
 			it( "Header without IP's", function () {
 				var self = this;

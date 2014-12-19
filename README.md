@@ -1,12 +1,14 @@
 # Proxywrap ![test-badge](http://strider.findhit.com/findhit/findhit-proxywrap/badge)
 
+__This is a temp bugfix fork__
+
 This module is a fork of original [proxywrap](https://github.com/daguej/node-proxywrap) by [Josh Dague](https://github.com/daguej). Unfortunately, the project doesn't have recent changes. As so, we decided to contribute to it by forking it and make it better. Do you have any idea to improve this? Feel free to open an **Issue** or **Pull Request**.
 
 This module wraps node's various `Server` interfaces so that they are compatible with the [PROXY protocol](http://haproxy.1wt.eu/download/1.5/doc/proxy-protocol.txt).  It automatically parses the PROXY headers and resets `socket.remoteAddress` and `socket.remotePort` so that they have the correct values.
 
 ```
 
-    npm install findhit-proxywrap
+    npm install sandfox-proxywrap
 
 ```
 
@@ -24,7 +26,7 @@ proxywrap is a drop-in replacement.  Here's a simple Express app:
 ```
 
     var http = require('http')
-        , proxiedHttp = require('findhit-proxywrap').proxy( http )
+        , proxiedHttp = require('sandfox-proxywrap').proxy( http )
         , express = require('express')
         , app = express()
         , srv = proxiedHttp.createServer(app); // instead of http.createServer(app)
@@ -43,7 +45,7 @@ You can do the same with `net` (raw TCP streams), `https`, and `spdy`.  It will 
 
 *Note*: If you're wrapping [node-spdy](https://github.com/indutny/node-spdy), its exports are a little strange:
 
-    var proxiedSpdy = require('proxywrap').proxy(require('spdy').server);
+    var proxiedSpdy = require('sandfox-proxywrap').proxy(require('spdy').server);
 
 This also adds to all your sockets the properties:
 * `socket.clientAddress` - The IP Address that connected to your PROXY.

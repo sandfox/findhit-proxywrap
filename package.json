@@ -1,6 +1,6 @@
 {
   "name": "sandfox-proxywrap",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Wraps node's Server interfaces to be compatible with the PROXY protocol",
   "main": "index.js",
   "author": "Josh Dague",
